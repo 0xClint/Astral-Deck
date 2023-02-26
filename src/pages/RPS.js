@@ -221,17 +221,17 @@ const RPS = () => {
       choice: await getOption(choiceA),
       oppChoice: await getOption(choiceB),
     };
-    // console.log(data);
 
-    const blob = new Blob([data], { type: "text/plain; charset=utf-8" });
-    // const blob = new Blob(data, { type: "application/json; charset=utf-8" });
-    const file = new File(blob);
+    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+    const files = [
+      new File(["contents-of-file-1"], "plain-utf8.txt"),
+      new File([blob], `${params.id}.json`),
+    ];
 
     const client = makeStorageClient();
-    const cid = await client.put(file);
-    console.log(cid);
+    const cid = await client.put(files);
 
-    // await contract.getReward(params.id, cid);
+    await contract.getReward(params.id, cid);
     setLoader(false);
   };
 
