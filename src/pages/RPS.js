@@ -6,19 +6,33 @@ import { Link, useParams } from "react-router-dom";
 import { sha256 } from "js-sha256";
 import axios from "axios";
 import hexToBytes from "../utils/HexToByte";
+import { Web3Storage } from "web3.storage";
 const { ethers } = require("ethers");
+
+function getAccessToken() {
+  return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDVhMTdGZjE5MTI5RTM4NjFCMkRjMDM4OGNlRmNGMzFlMTVGMUM3MjciLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzQ5OTk0OTQyNjksIm5hbWUiOiJldGhGb3JBbGwifQ.M7XJPOoZexjHcQA829tkmoey7TJnTXiLZiP69RS_60c";
+}
+
+function makeStorageClient() {
+  return new Web3Storage({ token: getAccessToken() });
+}
 
 const RPS = () => {
   const params = useParams();
-  // const { isWeb3Enabled, account } = useMoralis();
+
+  // const { account } = useMoralis();
   const [account, setAccount] = useState("");
   const [random, setRandom] = useState("");
   const [hashA, setHashA] = useState("");
   const [hashB, setHashB] = useState("");
   const [chosen, setChosen] = useState(false);
+  const [looser, setLooser] = useState(false);
   const [result, setResult] = useState("");
+  const [loader, setLoader] = useState(false);
   const [successResult, setSuccessResult] = useState(false);
+  // const [cId, setcId] = useState("");
 
+  // const [oppChoice, setOppChoice] = useState("");
   const [userA, setUserA] = useState("");
   const [userB, setUserB] = useState("");
   const [userId, setUserId] = useState("");
@@ -86,6 +100,7 @@ const RPS = () => {
     const getUserProof = async () => {
       const details = await contract.pair(params.id);
       let account = await signer.getAddress();
+      setAccount(account);
       console.log(details);
 
       if (account && details) {
@@ -175,10 +190,20 @@ const RPS = () => {
   const getResult = async () => {
     let data = await contract.getResult(params.id);
     setResult(data);
+    console.log(account + "-----" + data);
+    if (account == data) {
+      setLooser(true);
+    }
     setSuccessResult(true);
     console.log(data);
   };
+
+  const getOption = (key) => {
+    return key == "1" ? "Rock" : key == "2" ? "Paper" : "Scissor";
+  };
+
   const getReward = async () => {
+    setLoader(true);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(
@@ -186,28 +211,85 @@ const RPS = () => {
       CONTRACT_ABI,
       signer
     );
-    await contract.getReward(params.id);
+    let responses = await getResponses();
+    let choiceA = await Number(responses[0]._hex).toString();
+    let choiceB = await Number(responses[1]._hex).toString();
+
+    const data = {
+      winAddress: result,
+      gameNo: params.id,
+      choice: await getOption(choiceA),
+      oppChoice: await getOption(choiceB),
+    };
+    // console.log(data);
+
+    const blob = new Blob([data], { type: "text/plain; charset=utf-8" });
+    // const blob = new Blob(data, { type: "application/json; charset=utf-8" });
+    const file = new File(blob);
+
+    const client = makeStorageClient();
+    const cid = await client.put(file);
+    console.log(cid);
+
+    // await contract.getReward(params.id, cid);
+    setLoader(false);
   };
+
+  const getResponses = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      CONTRACT_ABI,
+      signer
+    );
+    // let data = await contract.data(params.id);
+    // console.log(data);
+    return await contract.data(params.id);
+  };
+
+  // const saveFile = async () => {
+  //   setLoader(true);
+
+  //   const data = {
+  //     winAddress: result,
+  //     gameNo: params.id,
+  //     choice: "rock",
+  //     oppChoice: "paper",
+  //   };
+  //   if (data) {
+  //     const client = await makeStorageClient();
+  //     const cid = await client.put(data);
+  //     console.log(cid);
+  //   }
+  // };
 
   return (
     <div className="bg-[#1A1B1F] h-screen w-[100vw] text-white">
+      {loader && (
+        <div className="loaderContainer absolute w-[100vw] h-[100vh] flex justify-center items-center z-10">
+          <div className=" w-[100%] absolute h-[100%] bg-black opacity-40 -z-5"></div>
+          <Loader className="z-10 w-20" />
+        </div>
+      )}
       {successResult && (
         <div className="loaderContainer absolute w-[100vw] h-[100vh] flex justify-center items-center z-10">
           <div className=" w-[100%] absolute h-[100%] bg-black opacity-40 -z-5"></div>
           <div className="z-10 flex flex-col justify-center items-center bg-clip-padding h-[200px] w-[500px] bg-gray-400 rounded-3xl backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500">
             <h2 className="text-[1.2rem] font-bold">Winner Address :</h2>
             <p className="text-[1.2rem]">{result ? result : "result"}</p>
-            <button
-              className="bg-[#2A313E] hover:bg-[#353E4E]  text-[1.2rem] py-2 px-4 rounded-lg w-[160px] mt-3"
-              onClick={() => getReward()}
-            >
-              Get Reward
-            </button>
+            {looser && (
+              <button
+                className="bg-[#2A313E] hover:bg-[#353E4E]  text-[1.2rem] py-2 px-4 rounded-lg w-[160px] mt-3"
+                onClick={() => getReward()}
+              >
+                Get Reward
+              </button>
+            )}
           </div>
         </div>
       )}
       <GameHeader />
-
       <div className="game-container mx-auto mt-10 h-[500px] w-[700px] bg-gray-400 rounded-3xl bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500">
         <h2 className="text-[2rem] font-bold text-center mt-5 mb-10">
           Rock Paper Scissor
