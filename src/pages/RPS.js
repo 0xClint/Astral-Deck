@@ -16,6 +16,8 @@ const RPS = () => {
   const [hashA, setHashA] = useState("");
   const [hashB, setHashB] = useState("");
   const [chosen, setChosen] = useState(false);
+  const [result, setResult] = useState("");
+  const [successResult, setSuccessResult] = useState(false);
 
   const [userA, setUserA] = useState("");
   const [userB, setUserB] = useState("");
@@ -170,8 +172,24 @@ const RPS = () => {
     // const tx = await contract.verify(98855, "2", "841976519", 2);
   };
 
+  const getResult = async () => {
+    let data = await contract.getResult(params.id);
+    setResult(data);
+    setSuccessResult(true);
+    console.log(data);
+  };
+
   return (
     <div className="bg-[#1A1B1F] h-screen w-[100vw] text-white">
+      {successResult && (
+        <div className="loaderContainer absolute w-[100vw] h-[100vh] flex justify-center items-center z-10">
+          <div className=" w-[100%] absolute h-[100%] bg-black opacity-40 -z-5"></div>
+          <div className="z-10 flex flex-col justify-center items-center bg-clip-padding h-[200px] w-[600px] bg-gray-400 rounded-3xl backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500">
+            <h2 className="text-[1.2rem] font-bold">Winner Address :</h2>
+            <p>{result ? result : "result"}</p>
+          </div>
+        </div>
+      )}
       <GameHeader />
 
       <div className="game-container mx-auto mt-10 h-[500px] w-[700px] bg-gray-400 rounded-3xl bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500">
@@ -259,8 +277,19 @@ const RPS = () => {
                 </p>
               </div>
             )}
-            <div>
-              <button onClick={() => verifyHash()}>Verify</button>
+            <div className="flex flex-col justify-center items-center gap-3 my-6">
+              <button
+                className="bg-[#2A313E] hover:bg-[#353E4E]  text-[1.2rem] py-2 px-4 rounded-lg w-[90%]"
+                onClick={() => verifyHash()}
+              >
+                Verify
+              </button>
+              <button
+                className="bg-[#2A313E] hover:bg-[#353E4E]  text-[1.2rem] py-2 px-4 rounded-lg w-[90%]"
+                onClick={() => getResult()}
+              >
+                Get Result
+              </button>
             </div>
           </div>
         </div>
