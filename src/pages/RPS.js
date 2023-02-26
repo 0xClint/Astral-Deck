@@ -13,6 +13,9 @@ const RPS = () => {
   // const { isWeb3Enabled, account } = useMoralis();
   const [account, setAccount] = useState("");
   const [random, setRandom] = useState("");
+  const [hashA, setHashA] = useState("");
+  const [hashB, setHashB] = useState("");
+  const [chosen, setChosen] = useState(false);
 
   const [userA, setUserA] = useState("");
   const [userB, setUserB] = useState("");
@@ -32,12 +35,25 @@ const RPS = () => {
     provider
   );
   // console.log(account);
+
   useEffect(() => {
     const getProofDetails = async () => {
-      const details = await contract.proof(68481);
-      // console.log("proof:" + details);
+      const details = await contract.proof(params.id);
+      console.log(details);
+      setHashA(details[0]);
+      setHashB(details[1]);
     };
-    getProofDetails();
+    while (
+      hashA ==
+        "0x0000000000000000000000000000000000000000000000000000000000000000" ||
+      hashB ==
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+    ) {
+      getProofDetails();
+    }
+  }, []);
+
+  useEffect(() => {
     const data = {
       jsonrpc: "2.0",
       method: "generateIntegers",
@@ -71,7 +87,7 @@ const RPS = () => {
       console.log(details);
 
       if (account && details) {
-        console.log(account, details[0]);
+        // console.log(account, details[0]);
         if (account == (await details[0])) {
           setUserA(account);
           setUserId("A");
@@ -80,9 +96,9 @@ const RPS = () => {
           console.log(oppState);
         } else {
           console.log("Hello");
-          if (account == (await details.B)) {
+          if (account == (await details[1])) {
             setUserB(account);
-            setUserA(details.A);
+            setUserA(details[0]);
           } else {
             setUserId("C");
           }
@@ -92,7 +108,7 @@ const RPS = () => {
     getUserProof();
   }, []);
 
-  const setHash = async () => {
+  const setHash = async (key) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(
@@ -100,18 +116,58 @@ const RPS = () => {
       CONTRACT_ABI,
       signer
     );
-    let hash = sha256("1" + random);
+
+    console.log(key, random, typeof key, typeof random);
+    console.log(key.concat(random));
+    setoptionId(key);
+
+    let hash = sha256(key.concat(random));
+
     console.log(
       params.id,
       random,
       await hash,
       typeof params.id,
-      typeof (await hexToBytes(hash))
-    );
-    const tx = await contract.choose(
-      parseInt(params.id),
       await hexToBytes(hash)
     );
+    if (!chosen) {
+      setChosen(true);
+      const tx = await contract.choose(
+        parseInt(params.id),
+        await hexToBytes(hash)
+      );
+    }
+
+    // setChosen(true);
+    // const tx = await contract.choose(
+    //   7805,
+    //   // await hexToBytes(
+    //   "0x45a14cd878eabbf0589e6ef48fea65831901cf454c367faa56207c1ce2eb7241"
+    //   // )
+    // );
+  };
+
+  const verifyHash = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      CONTRACT_ABI,
+      signer
+    );
+    console.log(
+      parseInt(params.id),
+      optionId,
+      random.toString(),
+      parseInt(optionId)
+    );
+    const tx = await contract.verify(
+      parseInt(params.id),
+      optionId,
+      random.toString(),
+      parseInt(optionId)
+    );
+    // const tx = await contract.verify(98855, "2", "841976519", 2);
   };
 
   return (
@@ -128,34 +184,84 @@ const RPS = () => {
               <Icon3 className="w-32" />
             </div>
             <div className="my-3 ml-4">Select Option</div>
-            <div className="select-container flex w-[100%] justify-around">
-              <div
-                onClick={() => setHash()}
-                className="w-[70px] h-[70px] hover:bg-[#43454F] rounded-xl bg-[#32333B] flex justify-center items-center border border-gray-500"
-              >
-                <Icon1 className="w-8" />
+
+            {chosen ? (
+              <div className="select-container flex w-[100%] justify-around">
+                <div className="w-[70px] h-[70px] rounded-xl bg-[#812020] flex justify-center items-center border border-gray-500">
+                  <Icon1 className="w-8" />
+                </div>
+                <div className="w-[70px] h-[70px] rounded-xl bg-[#812020] flex justify-center items-center border border-gray-500">
+                  <Icon2 className="w-9" />
+                </div>
+                <div className="w-[70px] h-[70px] rounded-xl bg-[#812020] flex justify-center items-center border border-gray-500">
+                  <Icon3 className="w-7" />
+                </div>
               </div>
-              <div className="w-[70px] h-[70px] hover:bg-[#43454F] rounded-xl bg-[#32333B] flex justify-center items-center border border-gray-500">
-                <Icon2 className="w-9" />
+            ) : (
+              <div className="select-container flex w-[100%] justify-around">
+                <div
+                  onClick={async () => {
+                    await setoptionId("1");
+                    await setHash("1");
+                  }}
+                  className="w-[70px] h-[70px] hover:bg-[#43454F] rounded-xl bg-[#32333B] flex justify-center items-center border border-gray-500"
+                >
+                  <Icon1 className="w-8" />
+                </div>
+                <div
+                  onClick={() => {
+                    setoptionId("2");
+                    setHash("2");
+                  }}
+                  className="w-[70px] h-[70px] hover:bg-[#43454F] rounded-xl bg-[#32333B] flex justify-center items-center border border-gray-500"
+                >
+                  <Icon2 className="w-9" />
+                </div>
+                <div
+                  onClick={() => {
+                    setoptionId("3");
+                    setHash("3");
+                  }}
+                  className="w-[70px] h-[70px] hover:bg-[#43454F] rounded-xl bg-[#32333B] flex justify-center items-center border border-gray-500"
+                >
+                  <Icon3 className="w-7" />
+                </div>
               </div>
-              <div className="w-[70px] h-[70px] hover:bg-[#43454F] rounded-xl bg-[#32333B] flex justify-center items-center border border-gray-500">
-                <Icon3 className="w-7" />
-              </div>
-            </div>
+            )}
           </div>
           <div className=" h-[220px] w-1/2 bg-[#32333B] rounded-3xl ">
-            {!oppState ? (
+            {userId == "A" ? (
+              !oppState ? (
+                <div className=" h-[100%] flex justify-center items-center">
+                  {/* <Loader className="w-16 absolute" /> */}
+                  <p className="">Other user has not joined...</p>
+                </div>
+              ) : (
+                <div className=" h-[100%] flex justify-center items-center">
+                  <p className="text-center mx-6">
+                    Other user has joined, please choose an options!
+                  </p>
+                </div>
+              )
+            ) : hashA ==
+              "0x0000000000000000000000000000000000000000000000000000000000000000" ? (
               <div className=" h-[100%] flex justify-center items-center">
-                {/* <Loader className="w-16 absolute" /> */}
-                <p className="">Other user has not joined...</p>
+                <Loader className="w-16 absolute" />
+                <p className="translate-y-12">Choosing...</p>
               </div>
             ) : (
               <div className=" h-[100%] flex justify-center items-center">
-                <p className="text-center mx-6">
-                  Other user has joined, please choose an options!
+                {/* <Loader className="w-16 absolute" /> */}
+                <p className="">
+                  User has chosen:
+                  <br />
+                  {hashA}
                 </p>
               </div>
             )}
+            <div>
+              <button onClick={() => verifyHash()}>Verify</button>
+            </div>
           </div>
         </div>
       </div>

@@ -1,36 +1,5 @@
-export const CONTRACT_ADDRESS = "0x21A6e99d6c0eD4bE880Caa48f83FFB89Abd91659";
+export const CONTRACT_ADDRESS = "0xF957bfD45637247C5B0DD5714f33C89545A1f051";
 export const CONTRACT_ABI = [
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "game",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes32",
-        name: "_proof",
-        type: "bytes32",
-      },
-    ],
-    name: "choose",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "game",
-        type: "uint256",
-      },
-    ],
-    name: "exit",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
   {
     inputs: [
       {
@@ -56,45 +25,6 @@ export const CONTRACT_ABI = [
     type: "event",
   },
   {
-    inputs: [],
-    name: "generatePair",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "game",
-        type: "uint256",
-      },
-    ],
-    name: "getReward",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "game",
-        type: "uint256",
-      },
-    ],
-    name: "join",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "uint256",
@@ -102,35 +32,12 @@ export const CONTRACT_ABI = [
         type: "uint256",
       },
       {
-        internalType: "uint256",
-        name: "usr",
-        type: "uint256",
+        internalType: "bytes32",
+        name: "_proof",
+        type: "bytes32",
       },
     ],
-    name: "penalize",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "game",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "option",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "rndm",
-        type: "uint256",
-      },
-    ],
-    name: "verify",
+    name: "choose",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -186,6 +93,32 @@ export const CONTRACT_ABI = [
         type: "uint256",
       },
     ],
+    name: "exit",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "generatePair",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "game",
+        type: "uint256",
+      },
+    ],
     name: "getResult",
     outputs: [
       {
@@ -195,6 +128,56 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "game",
+        type: "uint256",
+      },
+    ],
+    name: "getReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "opt",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "rndm",
+        type: "string",
+      },
+    ],
+    name: "hasher",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "game",
+        type: "uint256",
+      },
+    ],
+    name: "join",
+    outputs: [],
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -235,6 +218,24 @@ export const CONTRACT_ABI = [
     inputs: [
       {
         internalType: "uint256",
+        name: "game",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "usr",
+        type: "uint256",
+      },
+    ],
+    name: "penalize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "",
         type: "uint256",
       },
@@ -253,6 +254,34 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "game",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "option",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "rndm",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "opt",
+        type: "uint256",
+      },
+    ],
+    name: "verify",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
 ];
