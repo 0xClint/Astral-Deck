@@ -196,7 +196,7 @@ const RPS = () => {
           <div className=" w-[100%] absolute h-[100%] bg-black opacity-40 -z-5"></div>
           <div className="z-10 flex flex-col justify-center items-center bg-clip-padding h-[200px] w-[500px] bg-gray-400 rounded-3xl backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500">
             <h2 className="text-[1.2rem] font-bold">Winner Address :</h2>
-            <p className="text-[1.5rem]">{result ? result : "result"}</p>
+            <p className="text-[1.2rem]">{result ? result : "result"}</p>
             <button
               className="bg-[#2A313E] hover:bg-[#353E4E]  text-[1.2rem] py-2 px-4 rounded-lg w-[160px] mt-3"
               onClick={() => getReward()}
