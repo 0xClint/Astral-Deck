@@ -28,7 +28,7 @@ const RPS = () => {
 
   const provider = new ethers.providers.JsonRpcProvider(
     "https://polygon-mumbai.g.alchemy.com/v2/tJhWcjDo8S2sN0580yBZ5ssyf-wE0lnr"
-    // "https://app.zeeve.io/shared-api/poly/15bc381b18dfc5b19de35b637102934ce42663b707fc0460/"
+    // "https://app.zeeve.io/shared-api/poly/c55eb5146a590fd750f1967eb666bdec0fe45297623b5c6a/"
   );
 
   const contract = new ethers.Contract(
@@ -178,15 +178,31 @@ const RPS = () => {
     setSuccessResult(true);
     console.log(data);
   };
+  const getReward = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      CONTRACT_ABI,
+      signer
+    );
+    await contract.getReward(params.id);
+  };
 
   return (
     <div className="bg-[#1A1B1F] h-screen w-[100vw] text-white">
       {successResult && (
         <div className="loaderContainer absolute w-[100vw] h-[100vh] flex justify-center items-center z-10">
           <div className=" w-[100%] absolute h-[100%] bg-black opacity-40 -z-5"></div>
-          <div className="z-10 flex flex-col justify-center items-center bg-clip-padding h-[200px] w-[600px] bg-gray-400 rounded-3xl backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500">
+          <div className="z-10 flex flex-col justify-center items-center bg-clip-padding h-[200px] w-[500px] bg-gray-400 rounded-3xl backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500">
             <h2 className="text-[1.2rem] font-bold">Winner Address :</h2>
-            <p>{result ? result : "result"}</p>
+            <p className="text-[1.5rem]">{result ? result : "result"}</p>
+            <button
+              className="bg-[#2A313E] hover:bg-[#353E4E]  text-[1.2rem] py-2 px-4 rounded-lg w-[160px] mt-3"
+              onClick={() => getReward()}
+            >
+              Get Reward
+            </button>
           </div>
         </div>
       )}
@@ -199,7 +215,9 @@ const RPS = () => {
         <div className="choice-container flex gap-5 px-7">
           <div className="w-1/2">
             <div className=" h-[220px]  bg-[#32333B] rounded-3xl flex justify-center items-center">
-              <Icon3 className="w-32" />
+              {optionId == "1" && <Icon1 />}
+              {optionId == "2" && <Icon2 />}
+              {optionId == "3" && <Icon3 />}
             </div>
             <div className="my-3 ml-4">Select Option</div>
 

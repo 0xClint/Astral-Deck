@@ -1,5 +1,6 @@
 import React from "react";
 import { Navbar, Sidebar } from "../components";
+import { NavLink, useParams } from "react-router-dom";
 
 const Dashboard = () => {
   return (
@@ -22,7 +23,11 @@ const Dashboard = () => {
             <div className="my-8 text-[1.5rem] font-semibold">
               <h2 className="mb-5">Apps</h2>
               <div className="apps-container">
-                <div className="w-80 h-40  bg-gray-400 rounded-[50px] bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500"></div>
+                <NavLink to="/games/room">
+                  <div className="w-80 h-40 flex justify-center items-center bg-gray-400 rounded-[50px] bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-500">
+                    Rock Paper Scissors
+                  </div>
+                </NavLink>
               </div>
             </div>
           </div>
